@@ -1,8 +1,10 @@
 import numpy.random as r
+from numpy import savetxt
 from sys import argv
 
 SEED = int(argv[1])			# initial seed value
 NUM_CALLS = int(argv[2])	# number of elevator calls to generate
+OUT_FILE = argv[3]			# the path to which the time series will be written (in plain text)
 
 offset = 0 					# seed offset, increment by one every time number is generated
 current_time = 0
@@ -42,3 +44,7 @@ for i in range(NUM_CALLS):
 
 for call in calls:
 	print(call)
+
+# output 
+fmt = ('%0.2f', '%i', '%i')
+savetxt(OUT_FILE, calls, fmt=fmt)
