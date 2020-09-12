@@ -1,4 +1,4 @@
-import random as r
+import numpy.random as r
 from sys import argv
 
 SEED = argv[1]
