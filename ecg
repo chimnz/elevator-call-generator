@@ -6,7 +6,9 @@ from sys import argv
 SEED = int(argv[1])			# initial seed value
 NUM_CALLS = int(argv[2])	# number of elevator calls to generate
 OUT_FILE = argv[3]			# the path to which the time series will be written (in plain text)
+
 MSG_TEMP = "wrote to {}"
+HEADER_TEMP = 'SEED = {}\nNUM_CALLS = {}\ntime\tpos\tdest'
 
 offset = 0 					# seed offset, increment by one every time number is generated
 current_time = 0
@@ -46,5 +48,6 @@ for i in range(NUM_CALLS):
 
 # write array of calls to OUT_FILE
 print(MSG_TEMP.format(OUT_FILE))
+header = HEADER_TEMP.format(SEED, NUM_CALLS)
 fmt = ('%0.2f', '%i', '%i')
-savetxt(OUT_FILE, calls, fmt=fmt)
+savetxt(OUT_FILE, calls, fmt=fmt, header=header, delimiter='\t')
