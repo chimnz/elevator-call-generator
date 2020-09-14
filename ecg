@@ -35,7 +35,7 @@ def gen_floor():			            # generate random floor in range [1, 100]
 def gen_time():
     global current_time
     reseed()
-    time_delta = r.uniform(0.0, 600.0)  # next call can occur between 0 and 600 seconds (10 min) after previous call
+    time_delta = r.randint(0, 600)      # next call can occur between 0 and 600 discrete seconds (10 min) after previous call
     current_time += time_delta
     return round(current_time, 2)		# round to two decimal places
 
@@ -49,5 +49,5 @@ for i in range(NUM_CALLS):
 # write array of calls to OUT_FILE
 print(MSG_TEMP.format(OUT_FILE))
 header = HEADER_TEMP.format(SEED, NUM_CALLS)
-fmt = ('%0.2f', '%i', '%i')
+fmt = ('%i', '%i', '%i')
 savetxt(OUT_FILE, calls, fmt=fmt, header=header, delimiter='\t')
