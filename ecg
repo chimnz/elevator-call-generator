@@ -5,10 +5,12 @@ from sys import argv
 
 try:
     SEED = int(argv[1])			            # initial seed value
-    NUM_CALLS = int(argv[2])	            # number of elevator calls to generate
-    OUT_FILE = argv[3]			            # the path to which the time series will be written (in plain text)
+    F1_PROB = float(argv[2])                # probability that first floor will be called
+    DT_MAX = int(argv[3])                   # maximum number of seconds between successive calls
+    NUM_CALLS = int(argv[4])	            # number of elevator calls to generate
+    OUT_FILE = argv[5]			            # the path to which the time series will be written (in plain text)
 except:
-    exit('usage: ecg [SEED] [NUM_CALLS] [OUT_FILE]')
+    exit('usage: ecg [SEED] [F1_PROB] [DT_MAX] [NUM_CALLS] [OUT_FILE]')
 
 MSG_TEMP = "[SEED: {}; NUM_CALLS: {}] => {}"
 HEADER_TEMP = 'SEED = {}\nNUM_CALLS = {}\ntime\tpos\tdest'
@@ -33,19 +35,22 @@ def gen_npass():
 
 def gen_floor():			            # generate random floor in range [1, 100]
     reseed()
-    return r.randint(1, 101)
+    a = [floor for floor in range(1, 101)]
+    prob = (1 - F1_PROB) / 99           # uniform probability distribution for floors besides first floor
+    p = [F1_PROB] + [prob for floor in range(1, 100)]
+    return r.choice(a, p=p)
 
 def gen_time():
     global current_time
     reseed()
-    time_delta = r.randint(0, 600)      # next call can occur between 0 and 600 discrete seconds (10 min) after previous call
+    time_delta = r.randint(0, DT_MAX)   # next call can occur between 0 and DT_MAX seconds after previous call
     current_time += time_delta
     return current_time		            # round to two decimal places
 
 for i in range(NUM_CALLS):
     ###num_passengers = gen_npass()		# this is irrelevant for part A
     pos = gen_floor()
-    dest = gen_floor()					# obvious pattern between pos and dest is caused by re-use of gen_floor function w/o fancy seed mutation
+    dest = gen_floor()
     time = gen_time()
     calls.append( (time, pos, dest)	)
 
