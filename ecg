@@ -3,11 +3,14 @@ import numpy.random as r
 from numpy import savetxt
 from sys import argv
 
-SEED = int(argv[1])			            # initial seed value
-NUM_CALLS = int(argv[2])	            # number of elevator calls to generate
-OUT_FILE = argv[3]			            # the path to which the time series will be written (in plain text)
+try:
+    SEED = int(argv[1])			            # initial seed value
+    NUM_CALLS = int(argv[2])	            # number of elevator calls to generate
+    OUT_FILE = argv[3]			            # the path to which the time series will be written (in plain text)
+except:
+    exit('usage: ecg [SEED] [NUM_CALLS] [OUT_FILE]')
 
-MSG_TEMP = "wrote to {}"
+MSG_TEMP = "[SEED: {}; NUM_CALLS: {}] => {}"
 HEADER_TEMP = 'SEED = {}\nNUM_CALLS = {}\ntime\tpos\tdest'
 
 offset = 0 					            # seed offset, increment by one every time number is generated
@@ -37,7 +40,7 @@ def gen_time():
     reseed()
     time_delta = r.randint(0, 600)      # next call can occur between 0 and 600 discrete seconds (10 min) after previous call
     current_time += time_delta
-    return round(current_time, 2)		# round to two decimal places
+    return current_time		            # round to two decimal places
 
 for i in range(NUM_CALLS):
     ###num_passengers = gen_npass()		# this is irrelevant for part A
@@ -47,7 +50,7 @@ for i in range(NUM_CALLS):
     calls.append( (time, pos, dest)	)
 
 # write array of calls to OUT_FILE
-print(MSG_TEMP.format(OUT_FILE))
+print(MSG_TEMP.format(SEED, NUM_CALLS, OUT_FILE))
 header = HEADER_TEMP.format(SEED, NUM_CALLS)
 fmt = ('%i', '%i', '%i')
 savetxt(OUT_FILE, calls, fmt=fmt, header=header, delimiter='\t')
