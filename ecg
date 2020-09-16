@@ -12,6 +12,7 @@ try:
     DT_MAX = int(config['DT_MAX'])                      # maximum number of seconds between successive calls
     NUM_CALLS = int(config['NUM_CALLS'])	            # number of elevator calls to generate
     HEADER_TEMP = config['templates']['HEADER']
+    CALLS = io.StringIO()                               # write this to stdout
 except:
     exit('usage: ecg [CONFIG_FILE]')
 
@@ -55,8 +56,7 @@ for i in range(NUM_CALLS):
     calls.append( (time, pos, dest)	)
 
 # write array of calls to stdout; can be piped to stdin for "opelac"
-s = io.StringIO()
 header = HEADER_TEMP.format(SEED, F1_PROB, DT_MAX, NUM_CALLS)
 fmt = ('%i', '%i', '%i')
-savetxt(s, calls, fmt=fmt, header=header, delimiter='\t')
-print(s.getvalue().rstrip())
+savetxt(CALLS, calls, fmt=fmt, header=header, delimiter='\t')
+print(CALLS.getvalue().rstrip())
