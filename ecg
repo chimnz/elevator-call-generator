@@ -44,7 +44,7 @@ def gen_floor():			            # generate random floor in range [1, 100]
 def gen_time():
     global current_time
     reseed()
-    time_delta = r.randint(0, DT_MAX)   # next call can occur between 0 and DT_MAX seconds after previous call
+    time_delta = r.randint(1, DT_MAX)   # next call can occur between 1 and DT_MAX seconds after previous call
     current_time += time_delta
     return current_time		            # round to two decimal places
 
