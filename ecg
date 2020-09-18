@@ -5,22 +5,22 @@ from sys import argv
 from yaml import load, FullLoader
 from io import StringIO
 
-try:
-    CONFIG_FILE = argv[1]
-    with open(CONFIG_FILE) as f:
-        config = load(f, Loader=FullLoader)
-    SEED = int(config['SEED'])			                # initial seed value
-    F1_PROB = float(config['F1_PROB'])                  # probability that first floor will be called
-    DT_MAX = int(config['DT_MAX'])                      # maximum number of seconds between successive calls
-    NUM_CALLS = int(config['NUM_CALLS'])	            # number of elevator calls to generate
-    HEADER_TEMP = config['templates']['HEADER']
-    CALLS = StringIO()                                  # write this to stdout
-except:
+if '-h' in argv:
     exit('usage: ecg [CONFIG_FILE]')
+CONFIG_FILE = argv[1]
+with open(CONFIG_FILE) as f:
+    config = load(f, Loader=FullLoader)
+SEED = int(config['SEED'])			                    # initial seed value
+F1_PROB = float(config['F1_PROB'])                      # probability that first floor will be called
+DT_MIN = int(config['DT_MIN'])                          # minimum number of seconds between each successive call
+DT_MAX = int(config['DT_MAX'])                          # maximum number of seconds between each successive call
+NUM_CALLS = int(config['NUM_CALLS'])	                # number of elevator calls to generate
+HEADER_TEMP = config['templates']['HEADER']
+CALLS = StringIO()                                      # write this to stdout
 
-offset = 0 					            # seed offset
 current_time = 0
-calls = []
+offset = 0 					                            # seed offset
+calls = []                                              # [(t, a, b), ...]
 
 def reseed():
     global offset
@@ -29,35 +29,35 @@ def reseed():
 
 def gen_npass():
     reseed()
-    N = lognormal()		            # default values work: mean=0, standard_deviation=1
-    if 0 < N <= 5:			            # will never be less than 0, can be greater than 5
+    N = lognormal()		                                # default values work: mean=0, standard_deviation=1
+    if 0 < N <= 5:			                            # will never be less than 0, can be greater than 5
         N = round(N)
     else:
         N = 5
     return N
 
-def gen_floor():			            # generate random floor in range [1, 100]
+def gen_floor():			                            # generate random floor in range [1, 100]
     reseed()
     a = [floor for floor in range(1, 101)]
-    prob = (1 - F1_PROB) / 99           # uniform probability distribution for floors besides first floor
+    prob = (1 - F1_PROB) / 99                           # uniform probability distribution for floors besides first floor
     p = [F1_PROB] + [prob for floor in range(1, 100)]
     return choice(a, p=p)
 
 def gen_time():
     global current_time
     reseed()
-    time_delta = randint(1, DT_MAX)   # next call can occur between 1 and DT_MAX seconds after previous call
+    time_delta = randint(DT_MIN, DT_MAX)                # next call can occur between DT_MIN and DT_MAX seconds after previous call
     current_time += time_delta
-    return current_time		            # round to two decimal places
+    return current_time
 
 for i in range(NUM_CALLS):
-    ###num_passengers = gen_npass()		# this is irrelevant for part A
+    ###num_passengers = gen_npass()		                # this is irrelevant for part A
     pos = gen_floor()
     dest = gen_floor()
     time = gen_time()
     calls.append( (time, pos, dest)	)
 
-# write array of calls to stdout; can be piped to stdin for "opelac"
+# write [CALLS] to stdout; can be piped to stdin for "opelac"
 header = HEADER_TEMP.format(SEED, F1_PROB, DT_MAX, NUM_CALLS)
 fmt = ('%i', '%i', '%i')
 savetxt(CALLS, calls, fmt=fmt, header=header, delimiter='\t')
