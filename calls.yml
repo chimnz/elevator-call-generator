@@ -1,7 +1,7 @@
-SEED: 10
-F1_PROB: 0.9
-DT_MAX: 60
-NUM_CALLS: 25
+SEED: 15
+F1_PROB: 0.2
+DT_MAX: 300
+NUM_CALLS: 200
 
 templates:
   HEADER: "SEED = {}\nF1_PROB = {}\nDT_MAX = {}\nNUM_CALLS = {}\ntime\tpos\tdest"
