@@ -62,7 +62,7 @@ for i in range(NUM_CALLS):
     calls.append( (time, pos, dest)	)
 
 # write [CALLS] to stdout; can be piped to stdin for "opelac"
-header = HEADER_TEMP.format(SEED, F1_PROB, DT_MAX, NUM_CALLS)
+header = HEADER_TEMP.format(SEED, NUM_FLOORS, F1_PROB, DT_MIN, DT_MAX, NUM_CALLS)
 fmt = ('%i', '%i', '%i')
 savetxt(CALLS, calls, fmt=fmt, header=header, delimiter='\t')
 print(CALLS.getvalue().rstrip())

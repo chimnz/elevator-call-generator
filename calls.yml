@@ -6,4 +6,4 @@ DT_MAX: 300
 NUM_CALLS: 200
 
 templates:
-  HEADER: "SEED = {}\nF1_PROB = {}\nDT_MAX = {}\nNUM_CALLS = {}\ntime\tpos\tdest"
+  HEADER: "SEED = {}\nNUM_FLOORS = {}\nF1_PROB = {}\nDT_MIN = {}\nDT_MAX = {}\nNUM_CALLS = {}\ntime\tpos\tdest"
