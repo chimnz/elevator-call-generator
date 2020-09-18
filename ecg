@@ -12,11 +12,12 @@ try:
     with open(CONFIG_FILE) as f:
         config = load(f, Loader=FullLoader)
     SEED = int(config['SEED'])			                    # initial seed value
+    NUM_FLOORS = int(config['NUM_FLOORS'])                  # number of floors in the building
     F1_PROB = float(config['F1_PROB'])                      # probability that first floor will be called
     DT_MIN = int(config['DT_MIN'])                          # minimum number of seconds between each successive call
     DT_MAX = int(config['DT_MAX'])                          # maximum number of seconds between each successive call
     NUM_CALLS = int(config['NUM_CALLS'])	                # number of elevator calls to generate
-    HEADER_TEMP = config['templates']['HEADER']
+    HEADER_TEMP = config['templates']['HEADER']             # template for savetxt output header
     CALLS = StringIO()                                      # write this to stdout
 except:
     exit('usage: ecg [CONFIG_FILE]')
@@ -39,11 +40,11 @@ def gen_npass():
         N = 5
     return N
 
-def gen_floor():			                            # generate random floor in range [1, 100]
+def gen_floor():			                            # generate random floor in range [1, NUM_FLOORS]
     reseed()
-    a = [floor for floor in range(1, 101)]
-    prob = (1 - F1_PROB) / 99                           # uniform probability distribution for floors besides first floor
-    p = [F1_PROB] + [prob for floor in range(1, 100)]
+    a = [floor for floor in range(1, NUM_FLOORS+1)]
+    prob = abs(1 - F1_PROB) / (NUM_FLOORS-1)                   # uniform probability distribution for floors besides first floor
+    p = [F1_PROB] + [prob for floor in range(1, NUM_FLOORS)]
     return choice(a, p=p)
 
 def gen_time():
