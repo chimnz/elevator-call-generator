@@ -5,18 +5,21 @@ from sys import argv
 from yaml import load, FullLoader
 from io import StringIO
 
-if '-h' in argv:
+try:
+    if '-h' in argv:
+        raise
+    CONFIG_FILE = argv[1]
+    with open(CONFIG_FILE) as f:
+        config = load(f, Loader=FullLoader)
+    SEED = int(config['SEED'])			                    # initial seed value
+    F1_PROB = float(config['F1_PROB'])                      # probability that first floor will be called
+    DT_MIN = int(config['DT_MIN'])                          # minimum number of seconds between each successive call
+    DT_MAX = int(config['DT_MAX'])                          # maximum number of seconds between each successive call
+    NUM_CALLS = int(config['NUM_CALLS'])	                # number of elevator calls to generate
+    HEADER_TEMP = config['templates']['HEADER']
+    CALLS = StringIO()                                      # write this to stdout
+except:
     exit('usage: ecg [CONFIG_FILE]')
-CONFIG_FILE = argv[1]
-with open(CONFIG_FILE) as f:
-    config = load(f, Loader=FullLoader)
-SEED = int(config['SEED'])			                    # initial seed value
-F1_PROB = float(config['F1_PROB'])                      # probability that first floor will be called
-DT_MIN = int(config['DT_MIN'])                          # minimum number of seconds between each successive call
-DT_MAX = int(config['DT_MAX'])                          # maximum number of seconds between each successive call
-NUM_CALLS = int(config['NUM_CALLS'])	                # number of elevator calls to generate
-HEADER_TEMP = config['templates']['HEADER']
-CALLS = StringIO()                                      # write this to stdout
 
 current_time = 0
 offset = 0 					                            # seed offset
