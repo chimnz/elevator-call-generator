@@ -1,18 +1,20 @@
 #!/usr/bin/env python3 -B
-import numpy.random as r
+from numpy.random import randint, lognormal, seed, choice
 from numpy import savetxt
-import sys, yaml, io
+from sys import argv
+from yaml import load, FullLoader
+from io import StringIO
 
 try:
-    CONFIG_FILE = sys.argv[1]
+    CONFIG_FILE = argv[1]
     with open(CONFIG_FILE) as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
+        config = load(f, Loader=FullLoader)
     SEED = int(config['SEED'])			                # initial seed value
     F1_PROB = float(config['F1_PROB'])                  # probability that first floor will be called
     DT_MAX = int(config['DT_MAX'])                      # maximum number of seconds between successive calls
     NUM_CALLS = int(config['NUM_CALLS'])	            # number of elevator calls to generate
     HEADER_TEMP = config['templates']['HEADER']
-    CALLS = io.StringIO()                               # write this to stdout
+    CALLS = StringIO()                                  # write this to stdout
 except:
     exit('usage: ecg [CONFIG_FILE]')
 
@@ -22,12 +24,12 @@ calls = []
 
 def reseed():
     global offset
-    r.seed(SEED + offset)
+    seed(SEED + offset)
     offset += 1
 
 def gen_npass():
     reseed()
-    N = r.lognormal()		            # default values work: mean=0, standard_deviation=1
+    N = lognormal()		            # default values work: mean=0, standard_deviation=1
     if 0 < N <= 5:			            # will never be less than 0, can be greater than 5
         N = round(N)
     else:
@@ -39,12 +41,12 @@ def gen_floor():			            # generate random floor in range [1, 100]
     a = [floor for floor in range(1, 101)]
     prob = (1 - F1_PROB) / 99           # uniform probability distribution for floors besides first floor
     p = [F1_PROB] + [prob for floor in range(1, 100)]
-    return r.choice(a, p=p)
+    return choice(a, p=p)
 
 def gen_time():
     global current_time
     reseed()
-    time_delta = r.randint(1, DT_MAX)   # next call can occur between 1 and DT_MAX seconds after previous call
+    time_delta = randint(1, DT_MAX)   # next call can occur between 1 and DT_MAX seconds after previous call
     current_time += time_delta
     return current_time		            # round to two decimal places
 
